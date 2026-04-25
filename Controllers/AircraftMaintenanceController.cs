@@ -27,4 +27,16 @@ public class AircraftMaintenanceController : ControllerBase
 
         return Ok(maintenance);
     }
+    [HttpGet("status/{status}")]
+    public async Task<ActionResult<IEnumerable<AircraftMaintenance>>> GetMaintenancesByStatus(string status)
+    {
+        var maintenances = await _repository.GetByStatusAsync(status);
+        return Ok(maintenances);
+    }
+    [HttpPost]
+    public async Task<ActionResult> InsertMaintenance(AircraftMaintenance maintenance)
+    {
+        await _repository.InsertMaintenanceAsync(maintenance);
+        return Ok();
+    }
 }
