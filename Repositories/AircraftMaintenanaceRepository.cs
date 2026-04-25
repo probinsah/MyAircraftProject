@@ -10,7 +10,19 @@ public class AircraftMaintenanceRepository
 
     public async Task<IEnumerable<AircraftMaintenance>> GetAllMaintenances()
     {
-        var query = "SELECT * FROM aircraft_maintenance";
+        var query = @"SELECT 
+                    id,
+                    aircraft_code AS ""AircraftCode"",
+                    aircraft_model AS ""AircraftModel"",
+                    maintenance_type AS ""MaintenanceType"",
+                    description,
+                    maintenance_date AS ""MaintenanceDate"",
+                    next_due_date AS ""NextDueDate"",
+                    engineer_name AS ""EngineerName"",
+                    status,
+                    created_at AS ""CreatedAt""
+                    FROM ua.aircraft_maintenance
+                    ORDER BY id";
         using (var connection = _context.CreateConnection())
         {
             var maintenances = await connection.QueryAsync<AircraftMaintenance>(query);
@@ -20,11 +32,48 @@ public class AircraftMaintenanceRepository
 
     public async Task<AircraftMaintenance> GetMaintenanceById(int id)
     {
-        var query = "SELECT * FROM aircraft_maintenance WHERE id = @Id";
+        var query = @"SELECT 
+                    id,
+                    aircraft_code AS ""AircraftCode"",
+                    aircraft_model AS ""AircraftModel"",
+                    maintenance_type AS ""MaintenanceType"",
+                    description,
+                    maintenance_date AS ""MaintenanceDate"",
+                    next_due_date AS ""NextDueDate"",
+                    engineer_name AS ""EngineerName"",
+                    status,
+                    created_at AS ""CreatedAt""
+                    FROM ua.aircraft_maintenance
+                    WHERE id = @Id";
         using (var connection = _context.CreateConnection())
         {
             var maintenance = await connection.QuerySingleOrDefaultAsync<AircraftMaintenance>(query, new { Id = id });
             return maintenance;
+        }
+    }
+    public async Task<IEnumerable<AircraftMaintenance>> GetByStatusAsync(string status)
+    {
+        var query = "SELECT * FROM ua.get_maintenance_by_status(@Status)";
+        using (var connection = _context.CreateConnection())        {
+            var maintenances = await connection.QueryAsync<AircraftMaintenance>(query, new { Status = status });
+            return maintenances.ToList();
+        }
+    }
+    public async Task InsertMaintenanceAsync(AircraftMaintenance maintenance)
+    {
+        var query = @"CALL ua.insert_maintenance(
+                    @AircraftCode,
+                    @AircraftModel,
+                    @MaintenanceType,
+                    @Description,
+                    @MaintenanceDate,
+                    @NextDueDate,
+                    @EngineerName,
+                    @Status
+                )";
+        using (var connection = _context.CreateConnection())
+        {
+            await connection.ExecuteAsync(query, maintenance);
         }
     }
 }
