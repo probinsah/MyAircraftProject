@@ -45,4 +45,16 @@ public class AircraftMaintenanceController : ControllerBase
         await _repository.InsertMaintenanceAsync(maintenance);
         return Ok();
     }
+    [HttpPut("{id}")]
+    public async Task<ActionResult> UpdateMaintenanceStatus(int id, string status)
+    {
+        await _repository.UpdateMaintenanceStatusAsync(id, status);
+        return Ok();
+    }
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteMaintenance(int id)
+    {
+        await _repository.DeleteMaintenanceAsync(id);
+        return Ok();
+    }
 }

@@ -76,4 +76,20 @@ public class AircraftMaintenanceRepository
             await connection.ExecuteAsync(query, maintenance);
         }
     }
+    public async Task UpdateMaintenanceStatusAsync(int id, string status)
+    {
+        var query = @"UPDATE ua.aircraft_maintenance SET status = @Status WHERE id = @Id";
+        using (var connection = _context.CreateConnection())
+        {
+            await connection.ExecuteAsync(query, new { Id = id, Status = status });
+        }
+    }
+    public async Task DeleteMaintenanceAsync(int id)
+    {
+        var query = @"DELETE FROM ua.aircraft_maintenance WHERE id = @Id";
+        using (var connection = _context.CreateConnection())
+        {
+            await connection.ExecuteAsync(query, new { Id = id });
+        }
+    }
 }
