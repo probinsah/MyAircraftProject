@@ -13,6 +13,8 @@ builder.Services.AddScoped<AircraftMaintenanceRepository>();
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddAutoMapper(typeof(Program));
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo

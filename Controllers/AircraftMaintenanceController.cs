@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
@@ -5,33 +6,38 @@ using Microsoft.AspNetCore.Mvc;
 public class AircraftMaintenanceController : ControllerBase
 {
     private readonly AircraftMaintenanceRepository _repository;
+    private readonly IMapper _mapper;
 
-    public AircraftMaintenanceController(AircraftMaintenanceRepository repository)
+    public AircraftMaintenanceController(AircraftMaintenanceRepository repository, IMapper mapper)
     {
         _repository = repository;
+        _mapper = mapper;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<AircraftMaintenance>>> GetAllMaintenances()
+    public async Task<ActionResult<IEnumerable<AircraftMaintenanceDto>>> GetAllMaintenances()
     {
         var maintenances = await _repository.GetAllMaintenances();
-        return Ok(maintenances);
+        var result = _mapper.Map<IEnumerable<AircraftMaintenanceDto>>(maintenances);
+        return Ok(result);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<AircraftMaintenance>> GetMaintenanceById(int id)
+    public async Task<ActionResult<AircraftMaintenanceDto>> GetMaintenanceById(int id)
     {
         var maintenance = await _repository.GetMaintenanceById(id);
         if (maintenance == null)
             return NotFound();
 
-        return Ok(maintenance);
+        var result = _mapper.Map<AircraftMaintenanceDto>(maintenance);
+        return Ok(result);
     }
     [HttpGet("status/{status}")]
-    public async Task<ActionResult<IEnumerable<AircraftMaintenance>>> GetMaintenancesByStatus(string status)
+    public async Task<ActionResult<IEnumerable<AircraftMaintenanceDto>>> GetMaintenancesByStatus(string status)
     {
         var maintenances = await _repository.GetByStatusAsync(status);
-        return Ok(maintenances);
+        var result = _mapper.Map<IEnumerable<AircraftMaintenanceDto>>(maintenances);
+        return Ok(result);
     }
     [HttpPost]
     public async Task<ActionResult> InsertMaintenance(AircraftMaintenance maintenance)
